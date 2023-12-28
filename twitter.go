@@ -1,4 +1,4 @@
-package twitter
+package gooauth
 
 import (
 	"context"
@@ -192,8 +192,8 @@ func (t *Twitter) Request() error {
 	var err error
 	ctx := context.Background()
 	var endpoint strings.Builder
-	endpoint.WriteString(UrlTwitter)
-	endpoint.WriteString(OAuthEndpointRequestToken)
+	endpoint.WriteString(TwitterUrl)
+	endpoint.WriteString(TwitterOAuthEndpointRequestToken)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint.String(), nil)
 	if err != nil {
