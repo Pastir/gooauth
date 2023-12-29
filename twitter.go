@@ -4,7 +4,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
-	"fmt"
 	"math/rand"
 	"net/url"
 	"sort"
@@ -158,7 +157,7 @@ func (t *Twitter) createSigningKey() error {
 	signingKey.WriteString(url.QueryEscape(t.OauthTokenSecret))
 
 	hmac := hmac.New(sha1.New, []byte(signingKey.String()))
-	fmt.Println(t.BaseString.String())
+
 	_, err = hmac.Write([]byte(t.BaseString.String()))
 	if err != nil {
 		return err
