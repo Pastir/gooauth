@@ -13,7 +13,7 @@ import (
 )
 
 type (
-	Twitter struct {
+	Oauth struct {
 		OauthConsumerKey     string
 		OauthConsumerSecret  string
 		OauthNonce           string
@@ -40,9 +40,9 @@ type (
 	}
 )
 
-func Oauth(accessToken string, tokenSecret string, consumerKey string, consumerSecret string, oauthVersion string, apiUrl string) (Twitter, error) {
+func NewOauth(accessToken string, tokenSecret string, consumerKey string, consumerSecret string, oauthVersion string, apiUrl string) (Oauth, error) {
 	var err error
-	tw := Twitter{
+	tw := Oauth{
 		OauthToken:           accessToken,
 		OauthTokenSecret:     tokenSecret,
 		OauthConsumerKey:     consumerKey,
@@ -58,19 +58,19 @@ func Oauth(accessToken string, tokenSecret string, consumerKey string, consumerS
 	tw.createCollectingParameters()
 	err = tw.createSignatureBaseString()
 	if err != nil {
-		return Twitter{}, err
+		return Oauth{}, err
 	}
 
 	err = tw.createSigningKey()
 	if err != nil {
-		return Twitter{}, err
+		return Oauth{}, err
 	}
 
 	return tw, nil
 }
 
 // generateNonce - generate nonce
-func (t *Twitter) generateNonce() {
+func (t *Oauth) generateNonce() {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	nonce := make([]rune, 32)
@@ -83,7 +83,7 @@ func (t *Twitter) generateNonce() {
 }
 
 // collectingParameters Collecting parameters
-func (t *Twitter) createCollectingParameters() {
+func (t *Oauth) createCollectingParameters() {
 	t.Parameters = map[string]string{
 		"oauth_consumer_key":     t.OauthConsumerKey,
 		"oauth_nonce":            t.OauthNonce,
@@ -118,7 +118,7 @@ func (t *Twitter) createCollectingParameters() {
 }
 
 // createSignatureBaseString - Creating the signature base string
-func (t *Twitter) createSignatureBaseString() error {
+func (t *Oauth) createSignatureBaseString() error {
 
 	// Convert the HTTP Method to uppercase and set the output string equal to this value.
 	// Append the ‘&’ character to the output string.
@@ -146,7 +146,7 @@ func (t *Twitter) createSignatureBaseString() error {
 	return nil
 }
 
-func (t *Twitter) createSigningKey() error {
+func (t *Oauth) createSigningKey() error {
 	var err error
 	var signingKey strings.Builder
 	// Both of these values need to be combined to form a signing key which will be used to generate the signature.
@@ -166,10 +166,9 @@ func (t *Twitter) createSigningKey() error {
 	t.SigningKey = base64.StdEncoding.EncodeToString(hmac.Sum(nil))
 
 	return nil
-
 }
 
-func (t *Twitter) CreateOAuthHeader() (string, error) {
+func (t *Oauth) CreateOAuthHeader() (string, error) {
 
 	var paramsString strings.Builder
 	paramsString.WriteString("OAuth ")
